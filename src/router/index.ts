@@ -83,7 +83,7 @@ const router = createRouter({
 })
 
 // 路由守卫 - 登录验证
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
     const token = localStorage.getItem('token')
 
     // 如果没有 Token 且不是访问登录页，跳转到登录页
