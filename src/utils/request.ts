@@ -1,0 +1,90 @@
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import { ElMessage } from 'element-plus'
+
+// 请求配置接口
+export interface RequestConfig extends AxiosRequestConfig {
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'get' | 'post' | 'put' | 'delete' | 'patch'
+}
+
+// 创建 axios 实例
+// baseURL: 后端网关路径 "/gateway"，可根据实际网关路径修改
+const service = axios.create({
+    baseURL: import.meta.env.VITE_APP_API_BASE_URL + "/gateway",
+    timeout: 15000,
+    headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+    }
+})
+
+// 请求拦截器
+service.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token')
+        if (token && config.headers) {
+            config.headers['Authorization'] = `Bearer ${token}`
+        }
+        return config
+    },
+    (error: AxiosError) => {
+        console.error('请求错误:', error)
+        return Promise.reject(error)
+    }
+)
+
+// 响应拦截器
+service.interceptors.response.use(
+    (response: AxiosResponse) => {
+        const { code, message, data } = response.data
+
+        if (code === 200 || code === 0) {
+            return data
+        }
+
+        if (code === 401) {
+            ElMessage.error('登录已过期，请重新登录')
+            localStorage.removeItem('token')
+            window.location.href = '/login'
+            return Promise.reject(new Error(message || '登录已过期'))
+        }
+
+        ElMessage.error(message || '请求失败')
+        return Promise.reject(new Error(message || '请求失败'))
+    },
+    (error: AxiosError) => {
+        let message = '网络错误，请稍后重试'
+
+        if (error.response) {
+            const status = error.response.status
+            switch (status) {
+                case 400: message = '请求参数错误'; break
+                case 401:
+                    message = '未授权，请登录'
+                    localStorage.removeItem('token')
+                    window.location.href = '/login'
+                    break
+                case 403: message = '拒绝访问'; break
+                case 404: message = '请求地址不存在'; break
+                case 500: message = '服务器内部错误'; break
+                default: message = `请求失败: ${status}`
+            }
+        } else if (error.request) {
+            message = '网络连接失败'
+        }
+
+        ElMessage.error(message)
+        return Promise.reject(error)
+    }
+)
+
+// 请求函数
+const request = <T = any>(config: RequestConfig): Promise<T> => {
+    const { method = 'GET', url, ...rest } = config
+
+    return service({
+        method: method.toUpperCase(),
+        url,
+        ...rest
+    })
+}
+
+export default request
