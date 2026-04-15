@@ -36,19 +36,19 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: 'internal-material',
                         name: 'InternalMaterial',
-                        component: () => import('@/views/dev/InternalMaterial.vue'),
+                        component: () => import('@/views/dev/InternalMaterial/index.vue'),
                         meta: { title: '内部物料档案', icon: 'Box' }
                     },
                     {
                         path: 'external-material',
                         name: 'ExternalMaterial',
-                        component: () => import('@/views/dev/ExternalMaterial.vue'),
+                        component: () => import('@/views/dev/ExternalMaterial/index.vue'),
                         meta: { title: '外部物料档案', icon: 'ShoppingCart' }
                     },
                     {
                         path: 'product',
                         name: 'Product',
-                        component: () => import('@/views/dev/Product.vue'),
+                        component: () => import('@/views/dev/Product/index.vue'),
                         meta: { title: '物料商品', icon: 'Goods' }
                     },
                     {
@@ -60,13 +60,13 @@ const routes: RouteRecordRaw[] = [
                             {
                                 path: 'summary',
                                 name: 'CostSummary',
-                                component: () => import('@/views/dev/CostSummary.vue'),
+                                component: () => import('@/views/dev/CostSummary/index.vue'),
                                 meta: { title: '核价汇总', icon: 'DataLine' }
                             },
                             {
                                 path: 'config',
                                 name: 'CostConfig',
-                                component: () => import('@/views/dev/CostConfig.vue'),
+                                component: () => import('@/views/dev/CostConfig/index.vue'),
                                 meta: { title: '配置', icon: 'Tools' }
                             }
                         ]
