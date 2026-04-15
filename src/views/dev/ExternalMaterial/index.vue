@@ -42,5 +42,13 @@ const { currentPage, pageSize, total, tableData, Plus } = useExternalMaterial()
 </script>
 
 <style scoped lang="scss">
-@import './index.scss';
+.material-container {
+  height: 100%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>

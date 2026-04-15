@@ -85,5 +85,12 @@ const { activeTab, config, costItems, handleSave, handleReset, Plus } = useCostC
 </script>
 
 <style scoped lang="scss">
-@import './index.scss';
+.config-container {
+  height: 100%;
+}
+
+.unit {
+  margin-left: 8px;
+  color: #909399;
+}
 </style>

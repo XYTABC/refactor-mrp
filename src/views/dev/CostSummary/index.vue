@@ -50,5 +50,18 @@ const { tableData, Refresh, Download } = useCostSummary()
 </script>
 
 <style scoped lang="scss">
-@import './index.scss';
+.cost-container {
+  height: 100%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
 </style>
