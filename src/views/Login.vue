@@ -65,6 +65,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { login } from '@/api/user'
+import { saveAuthSession } from '@/utils/auth'
 
 const router = useRouter()
 const formRef = ref<FormInstance>()
@@ -88,8 +89,10 @@ const handleLogin = async () => {
       loading.value = true
       try {
         const res = await login(form)
-        localStorage.setItem('token', res.token)
-        localStorage.setItem('username', res.nickName || form.userPhone)
+        saveAuthSession(res.token, res.nickName || form.userPhone, {
+          expiresAt: res.expiresAt,
+          expiresIn: res.expiresIn
+        })
         ElMessage.success('登录成功')
         router.push('/dashboard')
       } catch {

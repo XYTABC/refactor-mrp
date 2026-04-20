@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import { ElMessage } from 'element-plus'
+import { clearAuthSession, isTokenExpired } from '@/utils/auth'
 
 // 请求配置接口
 export interface RequestConfig extends AxiosRequestConfig {
@@ -19,6 +20,15 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
     (config) => {
+        if (isTokenExpired()) {
+            clearAuthSession()
+            if (window.location.pathname !== '/login') {
+                ElMessage.error('登录已过期，请重新登录')
+                window.location.href = '/login'
+            }
+            return Promise.reject(new Error('登录已过期'))
+        }
+
         const token = localStorage.getItem('token')
         if (token && config.headers) {
             config.headers['Authorization'] = `Bearer ${token}`
@@ -42,7 +52,7 @@ service.interceptors.response.use(
 
         if (code === 401) {
             ElMessage.error('登录已过期，请重新登录')
-            localStorage.removeItem('token')
+            clearAuthSession()
             window.location.href = '/login'
             return Promise.reject(new Error(message || '登录已过期'))
         }
@@ -59,7 +69,7 @@ service.interceptors.response.use(
                 case 400: message = '请求参数错误'; break
                 case 401:
                     message = '未授权，请登录'
-                    localStorage.removeItem('token')
+                    clearAuthSession()
                     window.location.href = '/login'
                     break
                 case 403: message = '拒绝访问'; break

@@ -86,6 +86,7 @@ import { ElMessage } from 'element-plus'
 import { Box } from '@element-plus/icons-vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { logout } from '@/api/user'
+import { clearAuthSession } from '@/utils/auth'
 
 const route = useRoute()
 const router = useRouter()
@@ -146,8 +147,7 @@ const handleLogout = async () => {
   try {
     await logout()
   } finally {
-    localStorage.removeItem('token')
-    localStorage.removeItem('username')
+    clearAuthSession()
     ElMessage.success('退出登录成功')
     router.push('/login')
   }

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { clearAuthSession, isTokenExpired } from '@/utils/auth'
 
 const routes: RouteRecordRaw[] = [
     {
@@ -85,10 +86,15 @@ const router = createRouter({
 // 路由守卫 - 登录验证
 router.beforeEach((to, _from, next) => {
     const token = localStorage.getItem('token')
+    const expired = isTokenExpired()
 
-    // 如果没有 Token 且不是访问登录页，跳转到登录页
-    if (!token && to.path !== '/login') {
+    // 无 token 或 token 过期时，跳转登录页
+    if ((!token || expired) && to.path !== '/login') {
+        clearAuthSession()
         next('/login')
+    } else if (token && expired && to.path === '/login') {
+        clearAuthSession()
+        next()
     } else {
         next()
     }
