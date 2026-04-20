@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: 'http://172.28.40.161',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
+          rewrite: (path) => path.replace(/^\/api/, '/gateway')
         }
       }
     },

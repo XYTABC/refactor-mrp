@@ -9,17 +9,31 @@ export interface RequestConfig extends AxiosRequestConfig {
 
 // 创建 axios 实例
 // baseURL: 后端网关路径 "/gateway"，可根据实际网关路径修改
+const baseURL = import.meta.env.VITE_APP_API_BASE_URL 
+    ? import.meta.env.VITE_APP_API_BASE_URL + '/gateway'
+    : '/api'
+
+console.log('API Base URL:', baseURL)
+
 const service = axios.create({
-    baseURL: import.meta.env.VITE_APP_API_BASE_URL + "/gateway",
+    baseURL,
     timeout: 15000,
     headers: {
         'Content-Type': 'application/json;charset=utf-8'
     }
 })
 
+// 不需要 token 的接口白名单
+const whiteList = ['/system/sanfu/ulp/sys/user/login']
+
 // 请求拦截器
 service.interceptors.request.use(
     (config) => {
+        // 白名单接口跳过 token 检查
+        if (whiteList.some(path => config.url?.includes(path))) {
+            return config
+        }
+        
         if (isTokenExpired()) {
             clearAuthSession()
             if (window.location.pathname !== '/login') {
@@ -62,6 +76,14 @@ service.interceptors.response.use(
     },
     (error: AxiosError) => {
         let message = '网络错误，请稍后重试'
+        
+        console.error('请求错误详情:', {
+            message: error.message,
+            code: error.code,
+            config: error.config,
+            response: error.response,
+            request: error.request
+        })
 
         if (error.response) {
             const status = error.response.status
